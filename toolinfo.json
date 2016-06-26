@@ -1,0 +1,9 @@
+{
+    "name" : "mediawiki-feeds",
+    "title" : "MediaWiki Feeds",
+    "description" : "A tool to generate RSS feeds for pages in MediaWiki categories.",
+    "url" : "http://tools.wmflabs.org/mediawiki-feeds",
+    "keywords" : "rss, feeds, syndication, wikiversity, newsletters, blogging, blogs",
+    "author" : "Sam Wilson",
+    "repository" : "https://github.com/samwilson/mediawiki-feeds.git"
+}
