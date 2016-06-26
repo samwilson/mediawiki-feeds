@@ -2,7 +2,7 @@
     "name": "samwilson/mediawiki-feeds",
     "description": "A tool to generate RSS feeds for pages in MediaWiki categories.",
     "type": "project",
-    "keywords": "MediaWiki, RSS, feeds, syndication",
+    "keywords": ["MediaWiki", "RSS", "feeds", "syndication"],
     "require": {
         "hamstar/Wikimate": "*",
         "suin/php-rss-writer": "*"
