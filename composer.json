@@ -3,15 +3,21 @@
     "description": "A tool to generate RSS feeds for pages in MediaWiki categories.",
     "type": "project",
     "keywords": ["MediaWiki", "RSS", "feeds", "syndication"],
-    "require": {
-        "hamstar/Wikimate": "*",
-        "suin/php-rss-writer": "*"
-    },
     "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Sam Wilson",
             "email": "sam@samwilson.id.au"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Samwilson\\MediaWikiFeeds\\": "src/"
+        }
+    },
+    "require": {
+        "hamstar/Wikimate": "*",
+        "suin/php-rss-writer": "*",
+        "diversen/parse-argv": "^1.0"
+    }
 }

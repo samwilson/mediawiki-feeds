@@ -4,9 +4,55 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5df6c595b0b8634712792cb041409dbf",
-    "content-hash": "f395b339f03cb8f266c6c3fe0862879c",
+    "hash": "f674120a134be6f840c3934de4d585e7",
+    "content-hash": "a715d215bc9e21db0097ca8eacf3a2d2",
     "packages": [
+        {
+            "name": "diversen/parse-argv",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/diversen/parse-argv.git",
+                "reference": "1343b1d903512464e1b1a649dec127d2ecdd19c5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/diversen/parse-argv/zipball/1343b1d903512464e1b1a649dec127d2ecdd19c5",
+                "reference": "1343b1d903512464e1b1a649dec127d2ecdd19c5",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "diversen\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dennis Iversen",
+                    "email": "dennis.iversen@gmail.com",
+                    "homepage": "http://www.coscms.org/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Parse argv and get - and -- flags and values, and get any value without a flag.",
+            "homepage": "http://github.com/diversen/parse-argv",
+            "keywords": [
+                "argv",
+                "cli",
+                "console"
+            ],
+            "time": "2016-06-16 15:07:11"
+        },
         {
             "name": "hamstar/wikimate",
             "version": "v0.10.0",
