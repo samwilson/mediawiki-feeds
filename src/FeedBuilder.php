@@ -153,7 +153,6 @@ class FeedBuilder {
      * @return type
      */
     protected function getCategoryPages($wikimate, $cat) {
-        echo "Getting pages in $cat\n";
         // First get all pages in the root category.
         $pages = $this->getCategoryMembers($wikimate, $cat, 'page');
         // Then get all pages in subcategories of the root.
