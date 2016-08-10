@@ -2,12 +2,15 @@
 
 namespace Samwilson\MediaWikiFeeds;
 
+use Mediawiki\Api\MediawikiApi;
+use Mediawiki\Api\SimpleRequest;
+
 class FeedBuilder {
 
     private $scriptUrl, $category, $numItems, $cacheDir;
 
     public function __construct($scriptUrl, $category, $numItems = 10) {
-        $this->scriptUrl = $scriptUrl;
+        $this->scriptUrl = rtrim($scriptUrl, '/') . '/';
         $this->category = $category;
         $this->numItems = $numItems;
         $this->setCacheDir(__DIR__ . '/../feeds/');
@@ -39,9 +42,13 @@ class FeedBuilder {
         return $hasCurrentCache;
     }
 
+    /**
+     * The main action happens here.
+     * Build the feed, and write it to a local cache file.
+     */
     public function buildAndCacheFeed() {
-        $wikimate = new \Wikimate($this->scriptUrl . '/api.php');
-        $items = $this->getRecentNPages($this->scriptUrl, $wikimate, $this->category, $this->numItems);
+        $api = MediawikiApi::newFromApiEndpoint($this->scriptUrl . '/api.php');
+        $items = $this->getRecentNPages($this->scriptUrl, $api, $this->category, $this->numItems);
         $feed = $this->getFeed($this->scriptUrl, $this->category, $items);
         $feedFile = $this->getCachePath();
         if (!is_dir(dirname($feedFile))) {
@@ -50,15 +57,15 @@ class FeedBuilder {
         file_put_contents($feedFile, $feed->render());
     }
 
-    protected function getRecentNPages($url, $wikimate, $cat, $numItems) {
+    protected function getRecentNPages($url, MediawikiApi $api, $cat, $numItems) {
         // Get all the pages.
-        $allPages = $this->getCategoryPages($wikimate, $cat);
+        $allPages = $this->getCategoryPages($api, $cat);
 
         // Sort them by publication date.
         $pages = [];
         $pageNum = 1;
         foreach ($allPages as $page) {
-            $info = $this->getPageInfo($url, $wikimate, $page);
+            $info = $this->getPageInfo($url, $api, $page);
             $pages[$info['pubdate'] . ' ' . $pageNum] = $info;
             $pageNum++;
         }
@@ -91,22 +98,26 @@ class FeedBuilder {
         return $feed;
     }
 
-    protected function getPageInfo($url, \Wikimate $wikimate, $pageName) {
+    protected function getPageInfo($url, MediawikiApi $api, \Mediawiki\DataModel\Page $p) {
+        $fact = new \Mediawiki\Api\MediawikiFactory($api);
+        $page = $fact->newPageGetter()->getFromPage($p);
+        $pageName = $page->getPageIdentifier()->getTitle()->getText();
+
         // Get the page metadata.
-        $queryResult = $wikimate->query([
+        $params = [
             'prop' => 'info',
             'titles' => $pageName,
-        ]);
+        ];
+        $queryResult = $api->getRequest(new SimpleRequest('query', $params));
         $pageInfo = array_shift($queryResult['query']['pages']);
+
         // Get the page text, and categories etc.
-        $parseResult = $wikimate->parse([
-            'pageid' => $pageInfo['pageid'],
-        ]);
-        $content = $parseResult['parse']['text']['*'];
+        $parseResult = $fact->newParser()->parsePage($page->getPageIdentifier());
+        $content = $parseResult['text']['*'];
         $description = substr(strip_tags($content), 0, 400);
 
         // Try to get the publication date out of the HTML.
-        $html = new \SimpleXMLElement('<div>' . $parseResult['parse']['text']['*'] . '</div>');
+        $html = new \SimpleXMLElement("<div>$content</div>");
         $timeElements = $html->xpath('//time');
         $firstTime = array_shift($timeElements);
         if (isset($firstTime['datetime'])) {
@@ -116,13 +127,13 @@ class FeedBuilder {
         }
 
         // Get a list of contributors.
-        $contribResult = $wikimate->query([
+        $contribResult = $api->getRequest(new SimpleRequest('query', [
             'prop' => 'contributors',
             'titles' => $pageName,
-        ]);
+        ]));
         $contribs = array();
-        if (isset($contribResult['query']['pages'])) {
-            $contribsTmp = array_shift($contribResult['query']['pages']);
+        if (isset($contribResult['pages'])) {
+            $contribsTmp = array_shift($contribResult['pages']);
             foreach ($contribsTmp['contributors'] as $c) {
                 $contribs[] = $c['name'];
             }
@@ -148,17 +159,18 @@ class FeedBuilder {
     /**
      * Get all pages in a category and its subcategories.
      *
-     * @param type $wikimate
+     * @param MediawikiApi $api
      * @param type $cat
      * @return type
      */
-    protected function getCategoryPages($wikimate, $cat) {
+    protected function getCategoryPages(MediawikiApi $api, $cat) {
         // First get all pages in the root category.
-        $pages = $this->getCategoryMembers($wikimate, $cat, 'page');
+        $pages = $this->getCategoryMembers($api, $cat, 'page');
         // Then get all pages in subcategories of the root.
-        $subcats = $this->getCategoryMembers($wikimate, $cat, 'subcat');
+        $subcats = $this->getCategoryMembers($api, $cat, 'subcat');
         foreach ($subcats as $subcat) {
-            $subcatpages = $this->getCategoryPages($wikimate, $subcat);
+            $subcatTitle = $subcat->getPageIdentifier()->getTitle()->getText();
+            $subcatpages = $this->getCategoryPages($api, $subcatTitle);
             $pages = array_merge($pages, $subcatpages);
         }
         return $pages;
@@ -167,36 +179,17 @@ class FeedBuilder {
     /**
      * Get all items in a category, by type.
      *
-     * @param \Wikimate $wikimate The mediawiki instance to query
+     * @param \Mediawiki\Api\MediawikiApi $api The mediawiki instance to query
      * @param string $cat The category to search within
-     * @param string $type Either 'page', 'subcat', or 'type'
+     * @param string $type Either 'page', 'subcat', or 'file'
      * @return string[] Array of page titles.
      * @throws \Exception When a thing is exceptionally wrong.
      */
-    protected function getCategoryMembers($wikimate, $cat, $type = 'page') {
-        $pages = [];
-        do {
-            $continue = (isset($queryResult['continue'])) ? $queryResult['continue']['cmcontinue'] : '';
-            //var_dump($continue);
-            $queryResult = $wikimate->query([
-                'action' => 'query',
-                //'format' => 'json',
-                'list' => 'categorymembers',
-                'cmtype' => $type,
-                'cmtitle' => $cat,
-                'cmcontinue' => $continue,
-            ]);
-            if (isset($queryResult['error'])) {
-                var_dump($queryResult);
-                throw new \Exception($queryResult['error']['message']);
-            }
-            foreach ($queryResult['query']['categorymembers'] as $catMember) {
-                // Key the array by page ID so we don't duplicate
-                // when pages are in more than one subcategory.
-                $pages[$catMember['pageid']] = $catMember['title'];
-            }
-        } while (isset($queryResult['continue']));
-        return $pages;
+    protected function getCategoryMembers(MediawikiApi $api, $cat, $type = 'page') {
+        $factory = new \Mediawiki\Api\MediawikiFactory($api);
+        return $factory->newPageListGetter()
+                ->getPageListFromCategoryName($cat, ['cmtype' => $type])
+                ->toArray();
     }
 
 }

@@ -16,7 +16,7 @@
         }
     },
     "require": {
-        "hamstar/Wikimate": "*",
+        "addwiki/mediawiki-api": "dev-master",
         "suin/php-rss-writer": "*",
         "diversen/parse-argv": "^1.0"
     }

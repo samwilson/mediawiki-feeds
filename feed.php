@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 // Get the feed parameters.
 if (!isset($_GET['category'])) {
@@ -7,7 +7,7 @@ if (!isset($_GET['category'])) {
 }
 $cat = $_GET['category'];
 $wikiveristy = "https://en.wikiversity.org/w/";
-$url = rtrim(((isset($_GET['url'])) ? $_GET['url'] : $wikiveristy), '/');
+$url = (isset($_GET['url'])) ? $_GET['url'] : $wikiveristy;
 $numItems = (isset($_GET['num']) && is_int($_GET['num'])) ? $_GET['num'] : 10;
 
 // Construct the feed.
