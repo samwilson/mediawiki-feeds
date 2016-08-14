@@ -85,7 +85,7 @@ class FeedBuilder {
     protected function getFeed($wiki, $cat, $items) {
         $channel = new \Suin\RSSWriter\Channel();
         $channel->title($this->title);
-        $channel->url($wiki . 'index.php?title=' . $cat);
+        $channel->url($wiki.'index.php?title='.urlencode($cat));
         foreach ($items as $info) {
             $item = new \Suin\RSSWriter\Item();
             $item->title($info['title'])
