@@ -3,21 +3,24 @@
 namespace Samwilson\MediaWikiFeeds;
 
 use Mediawiki\Api\MediawikiApi;
+use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\SimpleRequest;
+use Symfony\Component\DomCrawler\Crawler;
 
 class FeedBuilder {
 
-    private $scriptUrl, $category, $numItems, $cacheDir;
+    private $scriptUrl, $category, $numItems, $title, $cacheDir;
 
-    public function __construct($scriptUrl, $category, $numItems = 10) {
+    public function __construct($scriptUrl, $category, $numItems = 10, $title = null) {
         $this->scriptUrl = rtrim($scriptUrl, '/') . '/';
         $this->category = $category;
         $this->numItems = $numItems;
+        $this->title = (!is_null($title)) ? $title : $category;
         $this->setCacheDir(__DIR__ . '/../feeds/');
     }
 
     public function getFeedId() {
-        return md5($this->scriptUrl . $this->category . $this->numItems);
+        return md5($this->scriptUrl . $this->category . $this->numItems . $this->title);
     }
 
     public function setCacheDir($cacheDir) {
@@ -31,6 +34,10 @@ class FeedBuilder {
         return $this->cacheDir;
     }
 
+    /**
+     * Get the full filesystem path to the cached RSS file.
+     * @return string
+     */
     public function getCachePath() {
         return $this->getCacheDir() . "/" . $this->getFeedId() . ".rss";
     }
@@ -77,8 +84,8 @@ class FeedBuilder {
 
     protected function getFeed($wiki, $cat, $items) {
         $channel = new \Suin\RSSWriter\Channel();
-        $channel->title($cat);
-        $channel->url($wiki . '/index.php?title=' . $cat);
+        $channel->title($this->title);
+        $channel->url($wiki . 'index.php?title=' . $cat);
         foreach ($items as $info) {
             $item = new \Suin\RSSWriter\Item();
             $item->title($info['title'])
@@ -99,7 +106,7 @@ class FeedBuilder {
     }
 
     protected function getPageInfo($url, MediawikiApi $api, \Mediawiki\DataModel\Page $p) {
-        $fact = new \Mediawiki\Api\MediawikiFactory($api);
+        $fact = new MediawikiFactory($api);
         $page = $fact->newPageGetter()->getFromPage($p);
         $pageName = $page->getPageIdentifier()->getTitle()->getText();
 
@@ -117,11 +124,11 @@ class FeedBuilder {
         $description = substr(strip_tags($content), 0, 400);
 
         // Try to get the publication date out of the HTML.
-        $html = new \SimpleXMLElement("<div>$content</div>");
-        $timeElements = $html->xpath('//time');
-        $firstTime = array_shift($timeElements);
-        if (isset($firstTime['datetime'])) {
-            $time = strtotime($firstTime['datetime']);
+        $pageCrawler = new Crawler;
+        $pageCrawler->addHTMLContent($content, 'UTF-8');
+        $timeElements = $pageCrawler->filterXPath('//time');
+        if ($timeElements->count() > 0 && $timeElements->first()->attr('datetime')) {
+            $time = strtotime($timeElements->first()->attr('datetime'));
         } else {
             $time = strtotime($pageInfo['touched']);
         }

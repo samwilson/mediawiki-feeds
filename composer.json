@@ -17,7 +17,13 @@
     },
     "require": {
         "addwiki/mediawiki-api": "dev-master",
-        "suin/php-rss-writer": "*",
-        "diversen/parse-argv": "^1.0"
+        "suin/php-rss-writer": "^1.5",
+        "diversen/parse-argv": "^1.0",
+        "symfony/dom-crawler": "^3.1"
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "php -r \"file_exists('config.php') || copy('config.dist.php', 'config.php');\""
+        ]
     }
 }

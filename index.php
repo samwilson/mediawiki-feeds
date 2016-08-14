@@ -1,3 +1,6 @@
+<?php
+require __DIR__.'/config.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -27,21 +30,28 @@
             <form action="feed.php" method="get" class="">
                 <div class="form-group">
                     <label>Wiki URL:</label>
-                    <input type="text" name="url" value="https://en.wikiversity.org/w/" size="50" class="form-control" />
+                    <input type="text" name="url" value="<?php echo htmlentities($defaults['url']) ?>" size="50" class="form-control" />
                     <p class="help-block">
                         This is the URL to which index.php or api.php can be appended.
                     </p>
                 </div>
                 <div class="form-group">
                     <label>Category:</label>
-                    <input type="text" name="category" value="Category:Blogs" size="80" class="form-control" />
+                    <input type="text" name="category" value="<?php echo htmlentities($defaults['category']) ?>" size="80" class="form-control" />
                     <p class="help-block">
                         With <code>Category:</code> at the front (or whatever is appropriate for your language).
                     </p>
                 </div>
                 <div class="form-group">
                     <label>Number of items:</label>
-                    <input type="text" name="num" value="10" size="10" class="form-control" />
+                    <input type="text" name="num" value="<?php echo htmlentities($defaults['num']) ?>" size="10" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Feed title:</label>
+                    <input type="text" name="title" placeholder="Same as 'Category', above" class="form-control" />
+                    <p class="help-block">
+                        The title that will be presented to the user.
+                    </p>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Get feed" class="btn btn-info" />

@@ -3,23 +3,34 @@ MediaWiki Feeds
 
 A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) categories.
 
+## Requirements
+
+1. `php-curl`
+
 ## Installation
 
 1. Clone from GitHub to a web-accessible location: `git clone https://github.com/samwilson/mediawiki-feeds.git`
 2. Install dependencies: `composer install`
+3. [*Optional*] Modify the `$defaults` array in `config.php`
 
 ## Usage
 
 Browse to `mediawiki-feeds/index.html` and fill in the form.
 
+You can prevent the feed from being cached by passing the `nocache` URL parameter (with any or no value).
+
+Note that there is a public deployment of this tool on WMFlabs: https://tools.wmflabs.org/mediawiki-feeds/
+
+### Command Line Interface
+
 If you want to produce feeds of categories that have a large number of members,
 the web-request may time out. In this case, use `cli.php` to populate the cache
 (e.g. from a cron job):
 
-    php cli.php --category=Category:Blog_posts --url=https://en.wikiversity.org/w/ --numItems=10
+    php cli.php --category=Category:Blog_posts --url=https://en.wikiversity.org/w/ --numItems=10 --title="Other title" --verbose
 
-There is also a public deployment of this tool on WMFlabs:
-https://tools.wmflabs.org/mediawiki-feeds/
+The CLI always rebuilds the cache (because that's what it's for; it's up to you to not call it too often).
+To find out the name of the cache file (e.g. to serve the RSS file directly), pass the `verbose` flag.
 
 ## Upgrading
 
@@ -29,4 +40,4 @@ https://tools.wmflabs.org/mediawiki-feeds/
 ## Reporting issues
 
 Please report any issues via GitHub https://github.com/samwilson/mediawiki-feeds/issues
-or by contacting the maintainer [User:Samwilson](https://meta.wikimedia.org/wiki/User:Samwilson) on Meta.
+or by contacting [User:Samwilson](https://mediawiki.org/wiki/User:Samwilson).
