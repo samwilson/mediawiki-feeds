@@ -19,5 +19,5 @@ if (!$feedBuilder->hasCurrentCache() || $noCache) {
 
 // Output the feed. Should this use application/rss+xml?
 header("Content-type:text/xml;charset=utf-8");
-echo file_get_contents($feedBuilder->getCachePath());
+readfile($feedBuilder->getCachePath());
 exit(0);
