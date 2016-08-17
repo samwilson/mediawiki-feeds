@@ -194,9 +194,15 @@ class FeedBuilder {
      */
     protected function getCategoryMembers(MediawikiApi $api, $cat, $type = 'page') {
         $factory = new \Mediawiki\Api\MediawikiFactory($api);
-        return $factory->newPageListGetter()
+        $pages = [];
+        $results = $factory->newPageListGetter()
                 ->getPageListFromCategoryName($cat, ['cmtype' => $type])
                 ->toArray();
+        foreach ($results as $res) {
+            // Key the returned array by title.
+            $pages[$res->getPageIdentifier()->getTitle()->getText()] = $res;
+        }
+        return $pages;
     }
 
 }
