@@ -63,6 +63,7 @@ class FeedBuilder {
             mkdir(dirname($feedFile));
         }
         file_put_contents($feedFile, $feed->render());
+        chmod($feedFile, 0664); // For CLI's benefit (if it's the same group).
     }
 
     protected function getRecentNPages($url, MediawikiApi $api, $cat, $numItems) {
