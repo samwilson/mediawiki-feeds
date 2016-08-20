@@ -93,12 +93,10 @@ class FeedBuilder {
                     ->description($info['description'])
                     ->contentEncoded($info['content'])
                     ->url($info['url'])
+                    ->author(join(', ', $info['authors']))
                     ->pubDate($info['pubdate'])
                     ->guid($info['guid'], true)
                     ->appendTo($channel);
-            foreach ($info['authors'] as $author) {
-                $item->author($author);
-            }
             continue;
         }
         $feed = new Feed();
@@ -113,11 +111,12 @@ class FeedBuilder {
 
         // Get the page metadata.
         $params = [
-            'prop' => 'info',
+            'prop' => 'revisions',
+            'rvprop' => 'ids|timestamp',
             'titles' => $pageName,
         ];
         $queryResult = $api->getRequest(new SimpleRequest('query', $params));
-        $pageInfo = array_shift($queryResult['query']['pages']);
+        $revisionInfo = array_shift($queryResult['query']['pages']);
 
         // Get the page text, and categories etc.
         $parseResult = $fact->newParser()->parsePage($page->getPageIdentifier());
@@ -131,7 +130,7 @@ class FeedBuilder {
         if ($timeElements->count() > 0 && $timeElements->first()->attr('datetime')) {
             $time = strtotime($timeElements->first()->attr('datetime'));
         } else {
-            $time = strtotime($pageInfo['touched']);
+            $time = strtotime($revisionInfo['revisions'][0]['timestamp']);
         }
 
         // Get a list of contributors.
@@ -149,17 +148,17 @@ class FeedBuilder {
 
         // Construct the feed title from the last part of the page title (i.e. the subpage title)
         //$title = substr($pageInfo['title'], strrpos($pageInfo['title'], '/') + 1);
-        $title = $pageInfo['title'];
+        $title = $revisionInfo['title'];
 
         // Put all the above together.
         $feedItem = [
             'title' => $title,
             'description' => $description,
             'content' => $content,
-            'url' => $url . '/index.php?curid=' . $pageInfo['pageid'],
+            'url' => $url . 'index.php?curid=' . $revisionInfo['pageid'],
             'authors' => $contribs,
             'pubdate' => $time,
-            'guid' => $url . 'index.php?oldid=' . $pageInfo['lastrevid'],
+            'guid' => $url . 'index.php?oldid=' . $revisionInfo['revisions'][0]['revid'],
         ];
         return $feedItem;
     }
