@@ -6,6 +6,7 @@ use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\SimpleRequest;
 use Symfony\Component\DomCrawler\Crawler;
+use Suin\RSSWriter\Feed;
 
 class FeedBuilder {
 
@@ -100,7 +101,7 @@ class FeedBuilder {
             }
             continue;
         }
-        $feed = new \Suin\RSSWriter\Feed();
+        $feed = new Feed();
         $feed->addChannel($channel);
         return $feed;
     }
@@ -138,9 +139,9 @@ class FeedBuilder {
             'prop' => 'contributors',
             'titles' => $pageName,
         ]));
-        $contribs = array();
-        if (isset($contribResult['pages'])) {
-            $contribsTmp = array_shift($contribResult['pages']);
+        $contribs = [];
+        if (isset($contribResult['query']['pages'])) {
+            $contribsTmp = array_shift($contribResult['query']['pages']);
             foreach ($contribsTmp['contributors'] as $c) {
                 $contribs[] = $c['name'];
             }
@@ -158,7 +159,7 @@ class FeedBuilder {
             'url' => $url . '/index.php?curid=' . $pageInfo['pageid'],
             'authors' => $contribs,
             'pubdate' => $time,
-            'guid' => $url . '/index.php?oldid=' . $pageInfo['lastrevid'],
+            'guid' => $url . 'index.php?oldid=' . $pageInfo['lastrevid'],
         ];
         return $feedItem;
     }
