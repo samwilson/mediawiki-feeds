@@ -16,17 +16,20 @@
         }
     },
     "require": {
-        "addwiki/mediawiki-api": "dev-master",
+        "addwiki/mediawiki-api": "^0.6",
         "suin/php-rss-writer": "^1.5",
         "diversen/parse-argv": "^1.0",
         "symfony/dom-crawler": "^3.1"
     },
     "scripts": {
-        "post-install-cmd": [
+        "mkconfig": [
             "php -r \"file_exists('config.php') || copy('config.dist.php', 'config.php');\""
         ],
+        "post-install-cmd": [
+            "composer mkconfig"
+        ],
         "post-update-cmd": [
-            "php -r \"file_exists('config.php') || copy('config.dist.php', 'config.php');\""
+            "composer mkconfig"
         ]
     }
 }
