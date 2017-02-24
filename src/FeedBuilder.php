@@ -122,7 +122,7 @@ class FeedBuilder {
         // Get the page text, and categories etc.
         $parseResult = $fact->newParser()->parsePage($page->getPageIdentifier());
         $content = $parseResult['text']['*'];
-        $description = substr(strip_tags($content), 0, 400);
+        $description = mb_substr(strip_tags($content), 0, 400);
 
         // Try to get the publication date out of the HTML.
         $pageCrawler = new Crawler;
