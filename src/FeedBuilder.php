@@ -122,11 +122,19 @@ class FeedBuilder {
         // Get the page text, and categories etc.
         $parseResult = $fact->newParser()->parsePage($page->getPageIdentifier());
         $content = $parseResult['text']['*'];
-        $description = mb_substr(strip_tags($content), 0, 400, 'utf-8');
-
-        // Try to get the publication date out of the HTML.
         $pageCrawler = new Crawler;
         $pageCrawler->addHTMLContent($content, 'UTF-8');
+
+        // Get the description
+        // (either the description item property, or just the truncated content).
+        $descriptionElements = $pageCrawler->filterXPath("//*[@itemprop='description']//text()");
+        if ($descriptionElements->count() > 0) {
+            $description = $descriptionElements->text();
+        } else {
+            $description = trim(mb_substr(strip_tags($content), 0, 400, 'utf-8'));
+        }
+
+        // Try to get the publication date out of the HTML.
         $timeElements = $pageCrawler->filterXPath('//time');
         if ($timeElements->count() > 0 && $timeElements->first()->attr('datetime')) {
             $time = strtotime($timeElements->first()->attr('datetime'));
@@ -142,8 +150,10 @@ class FeedBuilder {
         $contribs = [];
         if (isset($contribResult['query']['pages'])) {
             $contribsTmp = array_shift($contribResult['query']['pages']);
-            foreach ($contribsTmp['contributors'] as $c) {
-                $contribs[] = $c['name'];
+            if (isset($contribsTmp['contributors'])) {
+                foreach ( $contribsTmp['contributors'] as $c ) {
+                    $contribs[] = $c['name'];
+                }
             }
         }
 
