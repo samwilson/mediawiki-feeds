@@ -129,7 +129,9 @@ class FeedBuilder {
         // (either the description item property, or just the truncated content).
         $descriptionElements = $pageCrawler->filterXPath("//*[@itemprop='description']//text()");
         if ($descriptionElements->count() > 0) {
-            $description = $descriptionElements->text();
+            $description = join('', $descriptionElements->each(function (Crawler $node, $i) {
+                return $node->text();
+            }));
         } else {
             $description = trim(mb_substr(strip_tags($content), 0, 400, 'utf-8'));
         }
