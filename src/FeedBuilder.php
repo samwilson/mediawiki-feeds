@@ -23,7 +23,7 @@ class FeedBuilder {
     /** @var string */
     protected $category;
 
-    /** @var string */
+    /** @var integer */
     protected $numItems;
 
     /** @var string */
@@ -158,7 +158,7 @@ class FeedBuilder {
         // (either the description item property, or just the truncated content).
         $descriptionElements = $pageCrawler->filterXPath("//*[@itemprop='description']//text()");
         if ($descriptionElements->count() > 0) {
-            $description = join('', $descriptionElements->each(function (Crawler $node, $i) {
+            $description = join('', $descriptionElements->each(function (Crawler $node) {
                 return $node->text();
             }));
         } else {
@@ -167,7 +167,7 @@ class FeedBuilder {
 
         // Try to get the publication date out of the HTML.
         $timeElements = $pageCrawler->filterXPath('//time');
-        if ($timeElements->count() > 0 && $timeElements->first()->attr('datetime')) {
+        if ($timeElements->count() > 0 && $timeElements->first()->attr('datetime') !== null) {
             $time = strtotime($timeElements->first()->attr('datetime'));
         } else {
             $time = strtotime($revisionInfo['revisions'][0]['timestamp']);
