@@ -3,6 +3,8 @@ MediaWiki Feeds
 
 A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) categories.
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/?branch=master)
+
 ## Requirements
 
 1. `php-curl`
@@ -16,10 +18,19 @@ A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) catego
 ## Usage
 
 Browse to `mediawiki-feeds/index.html` and fill in the form.
+Pages in the category *and all subcategories* will be items in the feed.
 
 You can prevent the feed from being cached by passing the `nocache` URL parameter (with any or no value).
 
 Note that there is a public deployment of this tool on WMFlabs: https://tools.wmflabs.org/mediawiki-feeds/
+
+### Feed item formatting
+
+
+The first `<time>` element found on the page will be used for the publication date.
+
+The contents of an element with a `itemprop="description"` attribute will be used for the description,
+or else just the first 400 characters of the page.
 
 ### Command Line Interface
 

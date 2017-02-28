@@ -2,15 +2,35 @@
 
 namespace Samwilson\MediaWikiFeeds;
 
+use Exception;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\SimpleRequest;
+use Mediawiki\DataModel\Page;
+use Mediawiki\DataModel\PageIdentifier;
+use Mediawiki\DataModel\Pages;
+use Mediawiki\DataModel\Title;
+use Suin\RSSWriter\Channel;
+use Suin\RSSWriter\Item;
 use Symfony\Component\DomCrawler\Crawler;
 use Suin\RSSWriter\Feed;
 
 class FeedBuilder {
 
-    private $scriptUrl, $category, $numItems, $title, $cacheDir;
+    /** @var string */
+    protected $scriptUrl;
+
+    /** @var string */
+    protected $category;
+
+    /** @var string */
+    protected $numItems;
+
+    /** @var string */
+    protected $title;
+
+    /** @var string */
+    protected $cacheDir;
 
     public function __construct($scriptUrl, $category, $numItems = 10, $title = null) {
         $this->scriptUrl = rtrim($scriptUrl, '/') . '/';
@@ -27,7 +47,7 @@ class FeedBuilder {
     public function setCacheDir($cacheDir) {
         $this->cacheDir = realpath($cacheDir);
         if (!is_dir($this->cacheDir)) {
-            throw new \Exception("Cache directory not found: $this->cacheDir");
+            throw new Exception("Cache directory not found: $this->cacheDir");
         }
     }
 
@@ -67,15 +87,24 @@ class FeedBuilder {
     }
 
     protected function getRecentNPages($url, MediawikiApi $api, $cat, $numItems) {
+        $factory = new MediawikiFactory($api);
+
+        // Find the category namespace ID.
+        $catNs = $factory->newNamespaceGetter()->getNamespaceByCanonicalName('Category');
+
         // Get all the pages.
-        $allPages = $this->getCategoryPages($api, $cat);
+        $catTraverser = $factory->newCategoryTraverser();
+        $catPage = new Page(new PageIdentifier(new Title($cat, $catNs->getId())));
+        $allPages = $catTraverser->descend($catPage);
 
         // Sort them by publication date.
         $pages = [];
         $pageNum = 1;
-        foreach ($allPages as $page) {
+        foreach ($allPages->toArray() as $page) {
             $info = $this->getPageInfo($url, $api, $page);
-            $pages[$info['pubdate'] . ' ' . $pageNum] = $info;
+            // In case multiple posts have the exact same time, give them a decimal suffix.
+            $pageKey = str_pad($pageNum, strlen(count($allPages->toArray())), '0', STR_PAD_LEFT);
+            $pages[$info['pubdate'] . '.' . $pageKey] = $info;
             $pageNum++;
         }
         krsort($pages);
@@ -85,11 +114,11 @@ class FeedBuilder {
     }
 
     protected function getFeed($wiki, $cat, $items) {
-        $channel = new \Suin\RSSWriter\Channel();
+        $channel = new Channel();
         $channel->title($this->title);
         $channel->url($wiki.'index.php?title='.urlencode($cat));
         foreach ($items as $info) {
-            $item = new \Suin\RSSWriter\Item();
+            $item = new Item();
             $item->title($info['title'])
                     ->description($info['description'])
                     ->contentEncoded($info['content'])
@@ -105,7 +134,7 @@ class FeedBuilder {
         return $feed;
     }
 
-    protected function getPageInfo($url, MediawikiApi $api, \Mediawiki\DataModel\Page $p) {
+    protected function getPageInfo($url, MediawikiApi $api, Page $p) {
         $fact = new MediawikiFactory($api);
         $page = $fact->newPageGetter()->getFromPage($p);
         $pageName = $page->getPageIdentifier()->getTitle()->getText();
@@ -159,13 +188,9 @@ class FeedBuilder {
             }
         }
 
-        // Construct the feed title from the last part of the page title (i.e. the subpage title)
-        //$title = substr($pageInfo['title'], strrpos($pageInfo['title'], '/') + 1);
-        $title = $revisionInfo['title'];
-
         // Put all the above together.
         $feedItem = [
-            'title' => $title,
+            'title' => $revisionInfo['title'],
             'description' => $description,
             'content' => $content,
             'url' => $url . 'index.php?curid=' . $revisionInfo['pageid'],
@@ -174,48 +199,6 @@ class FeedBuilder {
             'guid' => $url . 'index.php?oldid=' . $revisionInfo['revisions'][0]['revid'],
         ];
         return $feedItem;
-    }
-
-    /**
-     * Get all pages in a category and its subcategories.
-     *
-     * @param MediawikiApi $api
-     * @param type $cat
-     * @return type
-     */
-    protected function getCategoryPages(MediawikiApi $api, $cat) {
-        // First get all pages in the root category.
-        $pages = $this->getCategoryMembers($api, $cat, 'page');
-        // Then get all pages in subcategories of the root.
-        $subcats = $this->getCategoryMembers($api, $cat, 'subcat');
-        foreach ($subcats as $subcat) {
-            $subcatTitle = $subcat->getPageIdentifier()->getTitle()->getText();
-            $subcatpages = $this->getCategoryPages($api, $subcatTitle);
-            $pages = array_merge($pages, $subcatpages);
-        }
-        return $pages;
-    }
-
-    /**
-     * Get all items in a category, by type.
-     *
-     * @param \Mediawiki\Api\MediawikiApi $api The mediawiki instance to query
-     * @param string $cat The category to search within
-     * @param string $type Either 'page', 'subcat', or 'file'
-     * @return string[] Array of page titles.
-     * @throws \Exception When a thing is exceptionally wrong.
-     */
-    protected function getCategoryMembers(MediawikiApi $api, $cat, $type = 'page') {
-        $factory = new \Mediawiki\Api\MediawikiFactory($api);
-        $pages = [];
-        $results = $factory->newPageListGetter()
-                ->getPageListFromCategoryName($cat, ['cmtype' => $type])
-                ->toArray();
-        foreach ($results as $res) {
-            // Key the returned array by title.
-            $pages[$res->getPageIdentifier()->getTitle()->getText()] = $res;
-        }
-        return $pages;
     }
 
 }

@@ -4,31 +4,36 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ffbe0293d6bb6d0c1f0a689d8cf337a4",
-    "content-hash": "9410a3126f0003d9d8cbc7e266834ad0",
+    "hash": "f7ef703273b4498439b6fc7b2e4e1a47",
+    "content-hash": "93076139d6434e78490c4be43e01c5b0",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
-            "version": "0.6",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/addwiki/mediawiki-api.git",
-                "reference": "b9bc0278b8068982f94d06f9d60b128ce1e5fa77"
+                "reference": "b9c311967e94f4a5bbb62c7054768f80648eb002"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/addwiki/mediawiki-api/zipball/b9bc0278b8068982f94d06f9d60b128ce1e5fa77",
-                "reference": "b9bc0278b8068982f94d06f9d60b128ce1e5fa77",
+                "url": "https://api.github.com/repos/addwiki/mediawiki-api/zipball/b9c311967e94f4a5bbb62c7054768f80648eb002",
+                "reference": "b9c311967e94f4a5bbb62c7054768f80648eb002",
                 "shasum": ""
             },
             "require": {
                 "addwiki/mediawiki-api-base": "~2.0",
-                "addwiki/mediawiki-datamodel": "~0.6.0"
+                "addwiki/mediawiki-datamodel": "~0.7.0-dev"
+            },
+            "require-dev": {
+                "jakub-onderka/php-parallel-lint": "^0.9.2",
+                "mediawiki/mediawiki-codesniffer": "^0.7.2",
+                "phpunit/phpunit": "~4.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6.x-dev"
+                    "dev-master": "0.7.x-dev"
                 }
             },
             "autoload": {
@@ -45,11 +50,11 @@
                     "name": "Addshore"
                 }
             ],
-            "description": "A Mediawiki api lib",
+            "description": "A MediaWiki API library",
             "keywords": [
                 "mediawiki"
             ],
-            "time": "2016-08-03 18:26:49"
+            "time": "2017-02-13 13:36:42"
         },
         {
             "name": "addwiki/mediawiki-api-base",
@@ -99,22 +104,22 @@
         },
         {
             "name": "addwiki/mediawiki-datamodel",
-            "version": "0.6",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/addwiki/mediawiki-datamodel.git",
-                "reference": "bbc2603db84c87e098907039de060c75d971b5f4"
+                "reference": "8782471513eee3904ce73bac06e1ebd4957282b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/addwiki/mediawiki-datamodel/zipball/bbc2603db84c87e098907039de060c75d971b5f4",
-                "reference": "bbc2603db84c87e098907039de060c75d971b5f4",
+                "url": "https://api.github.com/repos/addwiki/mediawiki-datamodel/zipball/8782471513eee3904ce73bac06e1ebd4957282b8",
+                "reference": "8782471513eee3904ce73bac06e1ebd4957282b8",
                 "shasum": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6.x-dev"
+                    "dev-master": "0.7.x-dev"
                 }
             },
             "autoload": {
@@ -135,7 +140,7 @@
             "keywords": [
                 "mediawiki"
             ],
-            "time": "2015-09-04 12:48:13"
+            "time": "2017-01-23 08:01:10"
         },
         {
             "name": "diversen/parse-argv",
@@ -298,16 +303,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "04a6d1a00ea5da0727ee94309a9f0d3dbaecb569"
+                "reference": "0d6c7ca039329247e4f0f8f8f6506810e8248855"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/04a6d1a00ea5da0727ee94309a9f0d3dbaecb569",
-                "reference": "04a6d1a00ea5da0727ee94309a9f0d3dbaecb569",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/0d6c7ca039329247e4f0f8f8f6506810e8248855",
+                "reference": "0d6c7ca039329247e4f0f8f8f6506810e8248855",
                 "shasum": ""
             },
             "require": {
@@ -359,7 +364,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-02-21 01:20:32"
+            "time": "2017-02-27 10:51:17"
         },
         {
             "name": "psr/http-message",
@@ -626,7 +631,10 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "addwiki/mediawiki-api": 20,
+        "addwiki/mediawiki-datamodel": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

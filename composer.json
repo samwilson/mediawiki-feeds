@@ -16,7 +16,8 @@
         }
     },
     "require": {
-        "addwiki/mediawiki-api": "^0.6",
+        "addwiki/mediawiki-api": "dev-master",
+        "addwiki/mediawiki-datamodel": "dev-master",
         "suin/php-rss-writer": "^1.5",
         "diversen/parse-argv": "^1.0",
         "symfony/dom-crawler": "^3.1"
