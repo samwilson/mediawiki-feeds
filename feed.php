@@ -2,8 +2,6 @@
 require __DIR__.'/vendor/autoload.php';
 require __DIR__.'/config.php';
 
-$cat = 
-
 // Get the feed parameters.
 $cat = (!empty($_GET['category'])) ? $_GET['category'] : $defaults['category'];
 $url = (!empty($_GET['url'])) ? $_GET['url'] : $defaults['url'];
