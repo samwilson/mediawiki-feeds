@@ -8,7 +8,6 @@ use Mediawiki\Api\MediawikiFactory;
 use Mediawiki\Api\SimpleRequest;
 use Mediawiki\DataModel\Page;
 use Mediawiki\DataModel\PageIdentifier;
-use Mediawiki\DataModel\Pages;
 use Mediawiki\DataModel\Title;
 use Suin\RSSWriter\Channel;
 use Suin\RSSWriter\Item;
@@ -37,7 +36,6 @@ class FeedBuilder {
         $this->category = $category;
         $this->numItems = $numItems;
         $this->title = (!is_null($title)) ? $title : $category;
-        $this->setCacheDir(__DIR__ . '/../feeds/');
     }
 
     public function getFeedId() {
@@ -45,13 +43,19 @@ class FeedBuilder {
     }
 
     public function setCacheDir($cacheDir) {
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0755, true);
+        }
         $this->cacheDir = realpath($cacheDir);
         if (!is_dir($this->cacheDir)) {
-            throw new Exception("Cache directory not found: $this->cacheDir");
+            throw new Exception("Cache directory not found: $cacheDir");
         }
     }
 
     public function getCacheDir() {
+        if (empty($this->cacheDir)) {
+            throw new Exception('Please set cache directory first');
+        }
         return $this->cacheDir;
     }
 

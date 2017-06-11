@@ -5,3 +5,4 @@ $defaults = [
     'category' => 'Category:Blog posts',
     'num' => 10,
 ];
+$displayErrorDetails = false;

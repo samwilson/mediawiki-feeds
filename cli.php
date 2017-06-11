@@ -25,6 +25,7 @@ $title = ((isset($args->flags['title'])) ? $args->flags['title'] : $cat);
 
 // Construct the feed.
 $feedBuilder = new \Samwilson\MediaWikiFeeds\FeedBuilder($url, $cat, $numItems, $title);
+$feedBuilder->setCacheDir(__DIR__.'/var/feeds');
 $feedBuilder->buildAndCacheFeed();
 if (isset($args->flags['v'])) {
     echo "Feed has been written to: ".$feedBuilder->getCachePath()."\n";
