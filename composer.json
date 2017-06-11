@@ -24,6 +24,9 @@
         "diversen/parse-argv": "^1.0",
         "symfony/dom-crawler": "^3.1"
     },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.0"
+    },
     "scripts": {
         "mkconfig": [
             "php -r \"file_exists('config.php') || copy('config.dist.php', 'config.php');\""

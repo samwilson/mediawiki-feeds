@@ -33,9 +33,10 @@ class RssController
         ]);
     }
 
-    public function feed(Request $request, Response $response, $args){
+    public function feed(Request $request, Response $response, $args)
+    {
         $defaults = $this->container->get('settings')['config']['defaults'];
-        
+
         // Get the feed parameters.
         $cat = $request->getParam('category', $defaults['category']);
         $url = $request->getParam('url', $defaults['url']);
@@ -52,7 +53,7 @@ class RssController
         $feedBuilder = new FeedBuilder($url, $cat, $numItems, $title);
         $feedBuilder->setCacheDir($this->container->get('settings')['config']['vardir'] . '/feeds');
 
-        $noCache = ($request->getParam('nocache', false) !== false);
+        $noCache = ($request->getParam('nocache', null) !== null);
         if (!$feedBuilder->hasCurrentCache() || $noCache) {
             $feedBuilder->buildAndCacheFeed();
         }

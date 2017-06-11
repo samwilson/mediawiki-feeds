@@ -14,7 +14,8 @@ use Suin\RSSWriter\Item;
 use Symfony\Component\DomCrawler\Crawler;
 use Suin\RSSWriter\Feed;
 
-class FeedBuilder {
+class FeedBuilder
+{
 
     /** @var string */
     protected $scriptUrl;
@@ -31,18 +32,21 @@ class FeedBuilder {
     /** @var string */
     protected $cacheDir;
 
-    public function __construct($scriptUrl, $category, $numItems = 10, $title = null) {
+    public function __construct($scriptUrl, $category, $numItems = 10, $title = null)
+    {
         $this->scriptUrl = rtrim($scriptUrl, '/') . '/';
         $this->category = $category;
         $this->numItems = $numItems;
         $this->title = (!is_null($title)) ? $title : $category;
     }
 
-    public function getFeedId() {
+    public function getFeedId()
+    {
         return md5($this->scriptUrl . $this->category . $this->numItems . $this->title);
     }
 
-    public function setCacheDir($cacheDir) {
+    public function setCacheDir($cacheDir)
+    {
         if (!is_dir($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
@@ -52,7 +56,8 @@ class FeedBuilder {
         }
     }
 
-    public function getCacheDir() {
+    public function getCacheDir()
+    {
         if (empty($this->cacheDir)) {
             throw new Exception('Please set cache directory first');
         }
@@ -63,11 +68,13 @@ class FeedBuilder {
      * Get the full filesystem path to the cached RSS file.
      * @return string
      */
-    public function getCachePath() {
+    public function getCachePath()
+    {
         return $this->getCacheDir() . "/" . $this->getFeedId() . ".rss";
     }
 
-    public function hasCurrentCache() {
+    public function hasCurrentCache()
+    {
         $feedFile = $this->getCachePath();
         $cacheTime = 60 * 60 * 1; // 1 hour.
         $hasCurrentCache = (file_exists($feedFile) && filemtime($feedFile) > (time() - $cacheTime));
@@ -78,7 +85,8 @@ class FeedBuilder {
      * The main action happens here.
      * Build the feed, and write it to a local cache file.
      */
-    public function buildAndCacheFeed() {
+    public function buildAndCacheFeed()
+    {
         $api = MediawikiApi::newFromApiEndpoint($this->scriptUrl . '/api.php');
         $items = $this->getRecentNPages($this->scriptUrl, $api, $this->category, $this->numItems);
         $feed = $this->getFeed($this->scriptUrl, $this->category, $items);
@@ -90,7 +98,8 @@ class FeedBuilder {
         chmod($feedFile, 0664); // For CLI's benefit (if it's the same group).
     }
 
-    protected function getRecentNPages($url, MediawikiApi $api, $cat, $numItems) {
+    protected function getRecentNPages($url, MediawikiApi $api, $cat, $numItems)
+    {
         $factory = new MediawikiFactory($api);
 
         // Find the category namespace ID.
@@ -117,7 +126,8 @@ class FeedBuilder {
         return array_slice($pages, 0, $numItems);
     }
 
-    protected function getFeed($wiki, $cat, $items) {
+    protected function getFeed($wiki, $cat, $items)
+    {
         $channel = new Channel();
         $channel->title($this->title);
         $channel->url($wiki.'index.php?title='.urlencode($cat));
@@ -138,7 +148,8 @@ class FeedBuilder {
         return $feed;
     }
 
-    protected function getPageInfo($url, MediawikiApi $api, Page $p) {
+    protected function getPageInfo($url, MediawikiApi $api, Page $p)
+    {
         $fact = new MediawikiFactory($api);
         $page = $fact->newPageGetter()->getFromPage($p);
         $pageName = $page->getPageIdentifier()->getTitle()->getText();
@@ -186,7 +197,7 @@ class FeedBuilder {
         if (isset($contribResult['query']['pages'])) {
             $contribsTmp = array_shift($contribResult['query']['pages']);
             if (isset($contribsTmp['contributors'])) {
-                foreach ( $contribsTmp['contributors'] as $c ) {
+                foreach ($contribsTmp['contributors'] as $c) {
                     $contribs[] = $c['name'];
                 }
             }
@@ -204,5 +215,4 @@ class FeedBuilder {
         ];
         return $feedItem;
     }
-
 }
