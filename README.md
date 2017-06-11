@@ -4,6 +4,8 @@ MediaWiki Feeds
 A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) categories.
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/badges/build.png?b=master)](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/build-status/master)
+[![Dependency Status](https://www.versioneye.com/user/projects/593ca03a368b080048d15aef/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/593ca03a368b080048d15aef)
 
 ## Requirements
 
@@ -12,7 +14,7 @@ A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) catego
 ## Installation
 
 1. Clone from GitHub to a web-accessible location: `git clone https://github.com/samwilson/mediawiki-feeds.git`
-2. Install dependencies: `composer install`
+2. Install dependencies: `composer install --no-dev`
 3. Create the `var` directory, and make it writeable by the web server and CLI users
 3. [*Optional*] Modify the `$defaults` array in `config.php`
 
