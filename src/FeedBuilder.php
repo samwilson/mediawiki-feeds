@@ -2,6 +2,7 @@
 
 namespace Samwilson\MediaWikiFeeds;
 
+use DateTime;
 use Exception;
 use Mediawiki\Api\MediawikiApi;
 use Mediawiki\Api\MediawikiFactory;
@@ -9,15 +10,12 @@ use Mediawiki\Api\SimpleRequest;
 use Mediawiki\DataModel\Page;
 use Mediawiki\DataModel\PageIdentifier;
 use Mediawiki\DataModel\Title;
-use Suin\RSSWriter\Channel;
-use Suin\RSSWriter\Item;
 use Symfony\Component\DomCrawler\Crawler;
-use Suin\RSSWriter\Feed;
 
-class FeedBuilder
+abstract class FeedBuilder
 {
 
-    /** @var string */
+    /** @var string The base URL, with trailing slash. */
     protected $scriptUrl;
 
     /** @var string */
@@ -40,6 +38,23 @@ class FeedBuilder
         $this->title = (!is_null($title)) ? $title : $category;
     }
 
+    /**
+     * Get a new FeedBuilder of the given type.
+     * @param string $type Either 'rss' or 'icalendar'.
+     * @return FeedBuilder
+     */
+    public static function factory($url, $cat, $numItems, $title, $type = 'rss')
+    {
+        $builderClassName = 'Samwilson\\MediaWikiFeeds\\'.ucfirst(strtolower($type)).'Builder';
+        /** @var FeedBuilder $feedBuilder */
+        $feedBuilder = new $builderClassName($url, $cat, $numItems, $title);
+        return $feedBuilder;
+    }
+
+    /**
+     * Get the feed's ID, which is a hash of the URL, category, number of items, and title.
+     * @return string
+     */
     public function getFeedId()
     {
         return md5($this->scriptUrl . $this->category . $this->numItems . $this->title);
@@ -70,9 +85,13 @@ class FeedBuilder
      */
     public function getCachePath()
     {
-        return $this->getCacheDir() . "/" . $this->getFeedId() . ".rss";
+        return $this->getCacheDir() . "/" . $this->getFeedId() . '.' . $this->getFileExtension();
     }
-
+    
+    /**
+     * Does this feed have a currently cached copy?
+     * @return bool
+     */
     public function hasCurrentCache()
     {
         $feedFile = $this->getCachePath();
@@ -80,25 +99,37 @@ class FeedBuilder
         $hasCurrentCache = (file_exists($feedFile) && filemtime($feedFile) > (time() - $cacheTime));
         return $hasCurrentCache;
     }
+    
+    /**
+     * Get the file extension.
+     * @return string
+     */
+    abstract public function getFileExtension();
 
     /**
-     * The main action happens here.
-     * Build the feed, and write it to a local cache file.
+     * Build the feed, and write it to the local cache file. This is the main entry point.
      */
     public function buildAndCacheFeed()
     {
         $api = MediawikiApi::newFromApiEndpoint($this->scriptUrl . '/api.php');
-        $items = $this->getRecentNPages($this->scriptUrl, $api, $this->category, $this->numItems);
-        $feed = $this->getFeed($this->scriptUrl, $this->category, $items);
+        $items = $this->getPagesInCategory($this->scriptUrl, $api, $this->category, $this->numItems);
         $feedFile = $this->getCachePath();
         if (!is_dir(dirname($feedFile))) {
             mkdir(dirname($feedFile));
         }
-        file_put_contents($feedFile, $feed->render());
+        $feed = $this->getFeedContents($items);
+        file_put_contents($feedFile, $feed);
         chmod($feedFile, 0664); // For CLI's benefit (if it's the same group).
     }
 
-    protected function getRecentNPages($url, MediawikiApi $api, $cat, $numItems)
+    /**
+     * Get the text contents of the feed.
+     * @param array $items The pages' data to create the feed from.
+     * @return string
+     */
+    abstract protected function getFeedContents($items);
+
+    protected function getPagesInCategory($url, MediawikiApi $api, $cat, $numItems)
     {
         $factory = new MediawikiFactory($api);
 
@@ -117,37 +148,12 @@ class FeedBuilder
             $info = $this->getPageInfo($url, $api, $page);
             // In case multiple posts have the exact same time, give them a decimal suffix.
             $pageKey = str_pad($pageNum, strlen(count($allPages->toArray())), '0', STR_PAD_LEFT);
-            $pages[$info['pubdate'] . '.' . $pageKey] = $info;
+            $pages[$info['pubdate']->format('U') . '.' . $pageKey] = $info;
             $pageNum++;
         }
-        krsort($pages);
-
-        // Select only the top N items.
-        return array_slice($pages, 0, $numItems);
+        return $pages;
     }
-
-    protected function getFeed($wiki, $cat, $items)
-    {
-        $channel = new Channel();
-        $channel->title($this->title);
-        $channel->url($wiki.'index.php?title='.urlencode($cat));
-        foreach ($items as $info) {
-            $item = new Item();
-            $item->title($info['title'])
-                    ->description($info['description'])
-                    ->contentEncoded($info['content'])
-                    ->url($info['url'])
-                    ->author(join(', ', $info['authors']))
-                    ->pubDate($info['pubdate'])
-                    ->guid($info['guid'], true)
-                    ->appendTo($channel);
-            continue;
-        }
-        $feed = new Feed();
-        $feed->addChannel($channel);
-        return $feed;
-    }
-
+    
     protected function getPageInfo($url, MediawikiApi $api, Page $p)
     {
         $fact = new MediawikiFactory($api);
@@ -182,10 +188,23 @@ class FeedBuilder
 
         // Try to get the publication date out of the HTML.
         $timeElements = $pageCrawler->filterXPath('//time');
-        if ($timeElements->count() > 0 && $timeElements->first()->attr('datetime') !== null) {
-            $time = strtotime($timeElements->first()->attr('datetime'));
+        // If there is only one time element, assume it's the publication date.
+        if ($timeElements->count() === 1 && $timeElements->first()->attr('datetime') !== null) {
+            $datePublished = DateTime::createFromFormat('U', strtotime($timeElements->first()->attr('datetime')));
         } else {
-            $time = strtotime($revisionInfo['revisions'][0]['timestamp']);
+            $datePublished = DateTime::createFromFormat('U', strtotime($revisionInfo['revisions'][0]['timestamp']));
+        }
+        // Start date and time.
+        $startDateElements = $timeElements->filterXPath("//*[@itemprop='startDate']");
+        $startDate = '';
+        if ($startDateElements->count() > 0) {
+            $startDate = DateTime::createFromFormat('U', strtotime($startDateElements->attr('datetime')));
+        }
+        // End date and time.
+        $endDateElements = $timeElements->filterXPath("//*[@itemprop='endDate']");
+        $endDate = '';
+        if ($endDateElements->count() > 0) {
+            $endDate = DateTime::createFromFormat('U', strtotime($startDateElements->attr('datetime')));
         }
 
         // Get a list of contributors.
@@ -210,9 +229,17 @@ class FeedBuilder
             'content' => $content,
             'url' => $url . 'index.php?curid=' . $revisionInfo['pageid'],
             'authors' => $contribs,
-            'pubdate' => $time,
+            'pubdate' => $datePublished,
+            'startdate' => $startDate,
+            'enddate' => $endDate,
             'guid' => $url . 'index.php?oldid=' . $revisionInfo['revisions'][0]['revid'],
         ];
         return $feedItem;
     }
+
+    /**
+     * Get the content-type string for this feed type.
+     * @return string
+     */
+    abstract public function getContentType();
 }

@@ -7,6 +7,7 @@ use Samwilson\MediaWikiFeeds\FeedBuilder;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\Twig;
+use Suin\RSSWriter\Feed;
 
 class RssController
 {
@@ -48,19 +49,19 @@ class RssController
         if (empty($title)) {
             $title = $cat;
         }
+        $type = $request->getParam('type', 'rss');
 
         // Construct the feed.
-        $feedBuilder = new FeedBuilder($url, $cat, $numItems, $title);
+        $feedBuilder = FeedBuilder::factory($url, $cat, $numItems, $title, $type);
         $feedBuilder->setCacheDir($this->container->get('settings')['config']['vardir'] . '/feeds');
-
         $noCache = ($request->getParam('nocache', null) !== null);
         if (!$feedBuilder->hasCurrentCache() || $noCache) {
             $feedBuilder->buildAndCacheFeed();
         }
 
-        // Output the feed. Should this use application/rss+xml?
+        // Output the feed.
         $cachePath = $feedBuilder->getCachePath();
-        $response->withHeader('Content-type', 'text/xml;charset=utf-8');
+        $response->withHeader('Content-type', $feedBuilder->getContentType());
         $response->withHeader('Content-Length', (string)filesize($cachePath));
         $response->getBody()->write(file_get_contents($cachePath));
         return $response;
