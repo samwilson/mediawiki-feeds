@@ -36,7 +36,7 @@ class RssBuilder extends FeedBuilder
                 ->contentEncoded($info['content'])
                 ->url($info['url'])
                 ->author(join(', ', $info['authors']))
-                ->pubDate($info['pubdate']->format('r'))
+                ->pubDate($info['pubdate']->format('U'))
                 ->guid($info['guid'], true)
                 ->appendTo($channel);
             continue;
