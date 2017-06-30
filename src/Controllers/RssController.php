@@ -61,9 +61,9 @@ class RssController
 
         // Output the feed.
         $cachePath = $feedBuilder->getCachePath();
-        $response->withHeader('Content-type', $feedBuilder->getContentType());
-        $response->withHeader('Content-Length', (string)filesize($cachePath));
         $response->getBody()->write(file_get_contents($cachePath));
-        return $response;
+        return $response
+            ->withHeader('Content-Type', $feedBuilder->getContentType())
+            ->withHeader('Content-Length', (string)filesize($cachePath));
     }
 }

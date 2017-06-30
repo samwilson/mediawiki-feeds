@@ -112,7 +112,7 @@ abstract class FeedBuilder
     public function buildAndCacheFeed()
     {
         $api = MediawikiApi::newFromApiEndpoint($this->scriptUrl . '/api.php');
-        $items = $this->getPagesInCategory($this->scriptUrl, $api, $this->category, $this->numItems);
+        $items = $this->getPagesInCategory($this->scriptUrl, $api, $this->category);
         $feedFile = $this->getCachePath();
         if (!is_dir(dirname($feedFile))) {
             mkdir(dirname($feedFile));
@@ -129,7 +129,7 @@ abstract class FeedBuilder
      */
     abstract protected function getFeedContents($items);
 
-    protected function getPagesInCategory($url, MediawikiApi $api, $cat, $numItems)
+    protected function getPagesInCategory($url, MediawikiApi $api, $cat)
     {
         $factory = new MediawikiFactory($api);
 
