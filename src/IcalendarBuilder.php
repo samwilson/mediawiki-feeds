@@ -3,12 +3,10 @@
 namespace Samwilson\MediaWikiFeeds;
 
 use DateTime;
-use Eluceo\iCal\Component\Calendar;
-use Eluceo\iCal\Component\Event;
 
 class IcalendarBuilder extends FeedBuilder
 {
-    
+
     public function getFileExtension()
     {
         return 'ical';
@@ -21,24 +19,33 @@ class IcalendarBuilder extends FeedBuilder
 
     public function getFeedContents($items)
     {
-        $calendar = new Calendar($this->scriptUrl);
-        $calendar->setName($this->title);
+        $ical = "BEGIN:VCALENDAR\r\nVERSION:2.0\n\r";
         foreach ($items as $item) {
-            $event = new Event();
-            $event->setSummary($item['title']);
-            $event->setUrl($item['url']);
-            $event->setUniqueId($item['guid']);
-            if (!empty($item['description'])) {
-                $event->setDescription($item['description']);
+
+            // Only use events that have a start date.
+            if (!$item['startdate']) {
+                continue;
             }
+
+            // Construct the VEVENT item.
+            $ical .= "BEGIN:VEVENT\r\nUID:".$item['guid']."\r\n";
             if ($item['startdate'] instanceof DateTime) {
-                $event->setDtStart($item['startdate']);
+                $ical .= "DTSTART:".$item['startdate']->format('YmdTHis')."Z\r\n";
             }
             if ($item['enddate'] instanceof DateTime) {
-                $event->setDtEnd($item['enddate']);
+                $ical .= "DTEND:".$item['enddate']->format('YmdTHis')."Z\r\n";
             }
-            $calendar->addComponent($event);
+            $ical .= "SUMMARY:".$item['title']."\r\n"
+                ."DESCRIPTION:".$this->wrap($item['description'])."\r\n"
+                ."URL:".$item['url']."\r\n"
+                ."END:VEVENT\r\n";
         }
-        return $calendar->render();
+        $ical .= "END:VCALENDAR\r\n";
+        return $ical;
+    }
+
+    protected function wrap($str)
+    {
+        return wordwrap($str, 73, "\r\n ", true);
     }
 }

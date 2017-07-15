@@ -45,6 +45,9 @@ abstract class FeedBuilder
      */
     public static function factory($url, $cat, $numItems, $title, $type = 'rss')
     {
+        if (empty($type)) {
+            $type = 'rss';
+        }
         $builderClassName = 'Samwilson\\MediaWikiFeeds\\'.ucfirst(strtolower($type)).'Builder';
         /** @var FeedBuilder $feedBuilder */
         $feedBuilder = new $builderClassName($url, $cat, $numItems, $title);
@@ -162,7 +165,8 @@ abstract class FeedBuilder
 
         // Get the page metadata.
         $params = [
-            'prop' => 'revisions',
+            'prop' => 'info|revisions',
+            'inprop' => 'url',
             'rvprop' => 'ids|timestamp',
             'titles' => $pageName,
         ];
@@ -227,12 +231,12 @@ abstract class FeedBuilder
             'title' => $revisionInfo['title'],
             'description' => $description,
             'content' => $content,
-            'url' => $url . 'index.php?curid=' . $revisionInfo['pageid'],
+            'url' => $revisionInfo['canonicalurl'],
             'authors' => $contribs,
             'pubdate' => $datePublished,
             'startdate' => $startDate,
             'enddate' => $endDate,
-            'guid' => $url . 'index.php?oldid=' . $revisionInfo['revisions'][0]['revid'],
+            'guid' => $revisionInfo['canonicalurl'],
         ];
         return $feedItem;
     }

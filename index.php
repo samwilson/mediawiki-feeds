@@ -1,6 +1,6 @@
 <?php
 
-use Samwilson\MediaWikiFeeds\Controllers\RssController;
+use Samwilson\MediaWikiFeeds\Controller;
 use Slim\Views\Twig;
 use Slim\Views\TwigExtension;
 
@@ -33,9 +33,9 @@ $container['view'] = function ($container) {
 };
 
 // Routes.
-$app->get('/', RssController::class.':home')->setName('home');
-$app->get('/feed', RssController::class.':feed')->setName('feed');
-$app->get('/feed.php', RssController::class.':feed');
+$app->get('/', Controller::class.':home')->setName('home');
+$app->get('/feed', Controller::class.':feed')->setName('feed');
+$app->get('/feed.php', Controller::class.':feed');
 
 // Run the application.
 $app->run();

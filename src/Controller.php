@@ -1,15 +1,13 @@
 <?php
 
-namespace Samwilson\MediaWikiFeeds\Controllers;
+namespace Samwilson\MediaWikiFeeds;
 
 use Psr\Container\ContainerInterface;
-use Samwilson\MediaWikiFeeds\FeedBuilder;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\Twig;
-use Suin\RSSWriter\Feed;
 
-class RssController
+class Controller
 {
 
     /** @var ContainerInterface */
@@ -17,7 +15,7 @@ class RssController
 
     /** @var Twig */
     protected $view;
-    
+
     public function __construct(ContainerInterface $container)
     {
         $this->view = $container->get('view');
