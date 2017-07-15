@@ -21,7 +21,6 @@ class IcalendarBuilder extends FeedBuilder
     {
         $ical = "BEGIN:VCALENDAR\r\nVERSION:2.0\n\r";
         foreach ($items as $item) {
-
             // Only use events that have a start date.
             if (!$item['startdate']) {
                 continue;
