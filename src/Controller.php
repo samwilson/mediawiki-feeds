@@ -29,6 +29,7 @@ class Controller
             'url' => $config['defaults']['url'],
             'category' => $config['defaults']['category'],
             'num' => $config['defaults']['num'],
+            'cdn' => $this->container->get('settings')['config']['cdn'],
         ]);
     }
 

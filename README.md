@@ -16,7 +16,10 @@ A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) catego
 1. Clone from GitHub to a web-accessible location: `git clone https://github.com/samwilson/mediawiki-feeds.git`
 2. Install dependencies: `composer install --no-dev`
 3. Create the `var` directory, and make it writeable by the web server and CLI users
-3. [*Optional*] Modify the `$defaults` array in `config.php`
+4. [*Optional*] Modify the `$defaults` array in `config.php`
+
+If installing on [Wikimedia Toolforge](https://wikitech.wikimedia.org/wiki/Portal:Toolforge),
+set the `$cdn` variable in `config.php` to `'toolforge'`.
 
 ## Usage
 

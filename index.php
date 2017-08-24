@@ -18,7 +18,8 @@ $app = new \Slim\App([
         'displayErrorDetails' => (isset($displayErrorDetails) && $displayErrorDetails),
         'config' => [
             'defaults' => $defaults,
-            'vardir' => __DIR__ . '/var'
+            'vardir' => __DIR__ . '/var',
+            'cdn' => (isset($cdn) && strtolower($cdn) == 'toolforge') ? 'toolforge' : 'maxcdn',
         ],
     ],
 ]);
