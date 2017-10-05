@@ -36,6 +36,7 @@ $container['view'] = function ($container) {
 // Routes.
 $app->get('/', Controller::class.':home')->setName('home');
 $app->get('/feed', Controller::class.':feed')->setName('feed');
+$app->get('/{catname}.rss', Controller::class.':feed');
 $app->get('/feed.php', Controller::class.':feed');
 
 // Run the application.
