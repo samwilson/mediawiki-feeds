@@ -5,7 +5,6 @@ A tool to create RSS feeds of pages in [MediaWiki](https://mediawiki.org) catego
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/badges/build.png?b=master)](https://scrutinizer-ci.com/g/samwilson/mediawiki-feeds/build-status/master)
-[![Dependency Status](https://www.versioneye.com/user/projects/593ca03a368b080048d15aef/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/593ca03a368b080048d15aef)
 
 ## Requirements
 
