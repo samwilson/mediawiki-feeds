@@ -38,6 +38,7 @@ class RssBuilder extends FeedBuilder
                 ->author(join(', ', $info['authors']))
                 ->pubDate($info['pubdate']->format('U'))
                 ->guid($info['guid'], true)
+                ->preferCdata(true) // Wrap the title and description in CDATA, to support HTML.
                 ->appendTo($channel);
             continue;
         }
