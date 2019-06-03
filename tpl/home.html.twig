@@ -32,26 +32,26 @@
             </div>
             <form action="{{ path_for('feed') }}" method="get" class="">
                 <div class="form-group">
-                    <label>Wiki URL:</label>
-                    <input type="text" name="url" value="{{ url }}" size="50" class="form-control" />
+                    <label for="url">Wiki URL:</label>
+                    <input type="text" id="url" name="url" value="{{ url }}" size="50" class="form-control" />
                     <p class="help-block">
                         This is the URL to which index.php or api.php can be appended.
                     </p>
                 </div>
                 <div class="form-group">
-                    <label>Category:</label>
-                    <input type="text" name="category" value="{{ category }}" size="80" class="form-control" />
+                    <label for="category">Category:</label>
+                    <input type="text" id="category" name="category" value="{{ category }}" size="80" class="form-control" />
                     <p class="help-block">
                         With <code>Category:</code> at the front (or whatever is appropriate for your language).
                     </p>
                 </div>
                 <div class="form-group">
-                    <label>Number of items:</label>
-                    <input type="text" name="num" value="{{ num }}" size="10" class="form-control" />
+                    <label for="num">Number of items:</label>
+                    <input type="text" id="num" name="num" value="{{ num }}" size="10" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label>Feed title:</label>
-                    <input type="text" name="title" placeholder="Same as 'Category', above" class="form-control" />
+                    <label for="title">Feed title:</label>
+                    <input type="text" id="title" name="title" placeholder="Same as 'Category', above" class="form-control" />
                     <p class="help-block">
                         The title that will be presented to the user.
                     </p>

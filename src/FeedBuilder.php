@@ -40,6 +40,10 @@ abstract class FeedBuilder
 
     /**
      * Get a new FeedBuilder of the given type.
+     * @param string $url The wiki URL.
+     * @param string $cat The category name.
+     * @param int $numItems The number of items to retrieve.
+     * @param string $title The feed title.
      * @param string $type Either 'rss' or 'icalendar'.
      * @return FeedBuilder
      */
@@ -156,7 +160,7 @@ abstract class FeedBuilder
         }
         return $pages;
     }
-    
+
     protected function getPageInfo($url, MediawikiApi $api, Page $p)
     {
         $fact = new MediawikiFactory($api);
@@ -195,7 +199,8 @@ abstract class FeedBuilder
         // If there is only one time element, assume it's the publication date.
         if ($timeElements->count() === 1 && $timeElements->first()->attr('datetime') !== null) {
             $datePublished = DateTime::createFromFormat('U', strtotime($timeElements->first()->attr('datetime')));
-        } else {
+        }
+        if (!$datePublished instanceof DateTime) {
             $datePublished = DateTime::createFromFormat('U', strtotime($revisionInfo['revisions'][0]['timestamp']));
         }
         // Start date and time.

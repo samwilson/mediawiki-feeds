@@ -1,6 +1,7 @@
 <?php
 
 use Samwilson\MediaWikiFeeds\Controller;
+use Slim\App;
 use Slim\Views\Twig;
 use Slim\Views\TwigExtension;
 
@@ -13,7 +14,7 @@ if (!isset($defaults)) {
 }
 
 // Set up Slim.
-$app = new \Slim\App([
+$app = new App([
     'settings' => [
         'displayErrorDetails' => (isset($displayErrorDetails) && $displayErrorDetails),
         'config' => [
