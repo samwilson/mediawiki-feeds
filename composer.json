@@ -16,7 +16,7 @@
         }
     },
     "require": {
-        "slim/slim": "^3.8",
+        "slim/slim": "^4.2",
         "slim/twig-view": "^2.2",
         "twig/twig": "^1.18",
         "addwiki/mediawiki-api": "^0.7",
