@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a520bfd43ff4054df9280c98393265c6",
+    "content-hash": "86fc1ccaf8b494be9cd561c27d522c2c",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -828,25 +828,29 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.4.10",
+            "version": "v4.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "201b210fafcdd193c1e45b2994bf7133fb6263e8"
+                "reference": "4b9efd5708c3a38593e19b6a33e40867f4f89d72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/201b210fafcdd193c1e45b2994bf7133fb6263e8",
-                "reference": "201b210fafcdd193c1e45b2994bf7133fb6263e8",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/4b9efd5708c3a38593e19b6a33e40867f4f89d72",
+                "reference": "4b9efd5708c3a38593e19b6a33e40867f4f89d72",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8",
+                "php": "^7.1.3",
                 "symfony/polyfill-ctype": "~1.8",
                 "symfony/polyfill-mbstring": "~1.0"
             },
+            "conflict": {
+                "masterminds/html5": "<2.6"
+            },
             "require-dev": {
-                "symfony/css-selector": "~2.8|~3.0|~4.0"
+                "masterminds/html5": "^2.6",
+                "symfony/css-selector": "~3.4|~4.0"
             },
             "suggest": {
                 "symfony/css-selector": ""
@@ -854,7 +858,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "4.3-dev"
                 }
             },
             "autoload": {
@@ -881,29 +885,32 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-01T22:53:27+00:00"
+            "time": "2019-10-28T17:07:32+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.8.0",
+            "version": "v1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae"
+                "reference": "550ebaac289296ce228a706d0867afc34687e3f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
-                "reference": "7cc359f1b7b80fc25ed7796be7d96adc9b354bae",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/550ebaac289296ce228a706d0867afc34687e3f4",
+                "reference": "550ebaac289296ce228a706d0867afc34687e3f4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
+            "suggest": {
+                "ext-ctype": "For best performance"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8-dev"
+                    "dev-master": "1.12-dev"
                 }
             },
             "autoload": {
@@ -920,12 +927,12 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                },
-                {
                     "name": "Gert de Pagter",
                     "email": "BackEndTea@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -936,7 +943,7 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2018-04-30T19:57:29+00:00"
+            "time": "2019-08-06T08:03:45+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
