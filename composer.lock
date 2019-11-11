@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a520bfd43ff4054df9280c98393265c6",
+    "content-hash": "383e9385d335ed5d929c95e25b067a6a",
     "packages": [
         {
             "name": "addwiki/mediawiki-api",
@@ -188,16 +188,16 @@
         },
         {
             "name": "diversen/parse-argv",
-            "version": "v1.2.1",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/diversen/parse-argv.git",
-                "reference": "f87be758b9e15f5b3c84a425124c430287cba9ae"
+                "reference": "79826f249d93459375cb620c408a56a2a9f929b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/diversen/parse-argv/zipball/f87be758b9e15f5b3c84a425124c430287cba9ae",
-                "reference": "f87be758b9e15f5b3c84a425124c430287cba9ae",
+                "url": "https://api.github.com/repos/diversen/parse-argv/zipball/79826f249d93459375cb620c408a56a2a9f929b0",
+                "reference": "79826f249d93459375cb620c408a56a2a9f929b0",
                 "shasum": ""
             },
             "type": "library",
@@ -208,7 +208,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "diversen\\": ""
+                    "Diversen\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -230,7 +230,7 @@
                 "cli",
                 "console"
             ],
-            "time": "2016-12-14T18:19:27+00:00"
+            "time": "2019-11-09T11:59:20+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
